@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;400;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <title>Wen moon?</title>
+    <style>
+        body, html, #app {
+            height: 100vh
+        }
+        body {
+            background-image: url(bg.jpg);
+            background-size: 100%;
+            background-repeat: no-repeat;
+        }
+        * {
+            font-family: 'Roboto', sans-serif;
+            color: #5f6368;
+            text-align: center;
+        }
+        h1 {
+            font-size: 52px;
+            font-weight: 700;
+            color: #202124;
+            margin-bottom: 32px;
+        }
+        h1 span {
+            font-weight: 100;
+        }
+        h2 {
+            font-size: 32px;
+            font-weight: 700;
+            color: #202124;
+            margin-bottom: 32px;
+        }
+        p {
+            line-height: 32px;
+        }
+        .active {
+            background-color: red;
+        }
+
+        .button-container {
+            margin-top: 32px;
+        }
+
+        button {
+            border: solid 1px #B98B44;
+            color: white;
+            font-size: 14px;
+            text-transform: uppercase;
+            font-weight: 700;
+            padding: 5px 20px;
+            background: #B98B44;
+            border-radius: 4px;
+        }
+
+        button.back-button {
+            border: solid 1px #5f6368;
+            color: #5f6368;
+            background: transparent;
+            margin-right: 5px;
+        }
+        .item-badge {
+            border: solid 1px #5f6368;
+            color: #5f6368;
+            font-size: 14px;
+            text-transform: uppercase;
+            font-weight: 700;
+            padding: 5px 20px;
+            background: transparent;
+            border-radius: 15px;
+            display: inline-block;
+            margin-bottom: 5px;
+            cursor: pointer;
+        }
+
+        .item-badge.active {
+            background: #B98B44;
+            border: solid 1px #B98B44;
+            color: white;            
+        }
+        .item-card {
+            display:  inline-block;
+            border: solid 1px #5f6368;
+            width: 100px;
+            margin-right: 10px;
+            padding: 5px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            background-color: white;
+        }
+        .item-card span{
+            height: 60px;
+            display: block;
+            color: #B98B44;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .item-card  input{
+            width: 100%;
+            text-align: center;
+        }
+
+        .page-container {
+            display: flex;
+            height: 100vh;
+            align-items: center;
+        }
+
+        .page {
+            width: 100%;
+            margin: 30px 0;
+        }
+
+        .img-header {
+            width: 300px;
+            margin-bottom: 30px;
+        }
+
+        .shadow {
+        box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+        transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+        }
+
+        .shadow:hover {
+        box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <div class="container">
+       <div class="row page-container">
+            <div class="page" v-if="step == 0">
+                <img src="rocket-mini.png" class="img-header" alt="rocket" >
+                <h1><span>Lithium Ventures IDOs </span>WEN MOON?</h1>
+                <p>You invested in Lithium's IDOs and want to know when you'll be able to buy you're lambo? Now we have the answer! Let's discover when your investment will go to the moon</p>
+                <div class="button-container">
+                    <button @click="move(1)">Leeeeet's do it!!!</button>
+                </div>
+            </div>
+            <div class="page" v-if="step == 1">
+                <h2>How big is your moon?</h2>
+                <p>Some guys wanna lambos, other want an island... But now, let's talk about $$$$! How much dolars do you want to your investments achieve?</p>
+                <input type="text" v-model="goal">
+                <div class="button-container">
+                    <button @click="move(1)" v-if="goal && goal > 0">Continue</button>
+                </div>
+            </div>
+            <div class="page" v-if="step == 2">
+                <h2>What is your tier?</h2>
+                <p>Select the tier that you are right now so we can calculate your investments</p>
+                <div v-for="tier in tiers" :key="tier.name">
+                    <span class="item-badge shadow" @click="setAmount(tier.max)">I'm {{tier.name}}</span>
+                </div>
+                <div class="button-container">
+                    <button class="back-button" @click="move(-1)">Go back</button>
+                </div>               
+            </div>
+            <div class="page" v-if="step == 3">
+                <h2>How much did you invested in each project?</h2>
+                <p>As an investor you can put as much money as your tier allows you. Tell us about your bags!</p>
+                <div v-for="(project, index) in projects" :key="project.name" class="item-card shadow">
+                    <span>{{project.name}}</span>
+                    <input type="text" v-model="project.amount">
+                </div>
+                <div class="button-container">
+                    <button class="back-button" @click="move(-1)">Go back</button>
+                    <button @click="move(1)">Continue</button> 
+                </div>               
+            </div>
+            <div class="page" v-if="step == 4">
+                <h2>Which project do you believe more?</h2>
+                <p>Select 3 of the projects tha you think that can take you the moon!</p>
+                <div v-for="(project, index) in projects" :key="project.name">
+                    <span class="item-badge shadow" 
+                    v-bind:class="{ active: setting['up'].projects.indexOf(project.name) > -1}"
+                    @click="selectItem('up', project.name, index)">{{project.name}}</span>
+                </div>
+                <div class="button-container">
+                    <button class="back-button" @click="move(-1)">Go back</button>
+                    <button @click="move(1)" v-if="setting['up'].projects.length == 3">Continue</button> 
+                </div>               
+            </div>
+            <div class="page" v-if="step == 5">
+                <h2>Which one is the better?</h2>
+                <p>This one is THE PROJECT!!!</p>
+                <div v-for="(project, index) in projects" :key="project.name">
+                    <div v-if="setting['up'].projects.indexOf(project.name) > -1">
+                        <span class="item-badge shadow" 
+                        v-bind:class="{ active: setting['upper'].projects.indexOf(project.name) > -1}"
+                        @click="selectItem('upper', project.name, index)">{{project.name}}</span>
+                    </div>
+                </div>
+                <div class="button-container">
+                    <button class="back-button" @click="move(-1)">Go back</button>
+                    <button @click="move(1)" v-if="setting['upper'].projects.length == 1">Continue</button> 
+                </div>               
+            </div>
+            <div class="page" v-if="step == 6">
+                <h2>Which project do you believe less?</h2>
+                <p>Select 3 of the projects that you believe that will not do soooo well</p>
+                <div v-for="(project, index) in projects" :key="project.name">
+                    <div v-if="setting['up'].projects.indexOf(project.name) == -1">
+                        <span class="item-badge shadow" 
+                        v-bind:class="{ active: setting['down'].projects.indexOf(project.name) > -1}"
+                        @click="selectItem('down', project.name, index)">{{project.name}}</span>
+                    </div>
+                    
+                </div>
+                <div class="button-container">
+                    <button class="back-button" @click="move(-1)">Go back</button>
+                    <button @click="move(1)" v-if="setting['down'].projects.length == 3">Continue</button> 
+                </div>               
+            </div>
+            <div class="page" v-if="step == 7">
+                <h2>Which one is the worst?</h2>
+                <p>This project is so... Meh!</p>
+                <div v-for="(project, index) in projects" :key="project.name">
+                    <div v-if="setting['down'].projects.indexOf(project.name) > -1">
+                        <span class="item-badge shadow" 
+                        v-bind:class="{ active: setting['downer'].projects.indexOf(project.name) > -1 }"
+                        @click="selectItem('downer', project.name, index)">{{project.name}}</span>
+                    </div>
+                </div>
+                <div class="button-container">
+                    <button class="back-button" @click="move(-1)">Go back</button>
+                    <button @click="move(1)" v-if="setting['downer'].projects.length == 1">Continue</button> 
+                </div>               
+            </div>
+            <div class="page" v-if="step == 8">
+                <h2>Is this linear monthly growth possible?</h2>
+                <p>Check this monthly growth! Do you believe this project can grow (or decrease) this percentage every month?</p>
+                <div v-for="(project, index) in projects" :key="project.name" class="item-card shadow">
+                    <span>{{project.name}}</span>
+                    <input type="text" v-model="project.growth_percentage">
+                </div>
+                <div class="button-container">
+                    <button class="back-button" @click="move(-1)">Go back</button>
+                    <button @click="calculate()">Continue</button> 
+                </div>               
+            </div>
+            <div class="page" v-if="step == 9">
+                <h2>You will reach your moon in {{ goal_months_count }} months!</h2>
+                <p>Considering the exponential growth, based in the configutaions provided, you'll have ${{ goal_reached.toFixed(2) }} in {{ goal_months_count }} months</p>
+                <p>Check bellow the evolution of the projects:</p>
+                <div>
+                    <div id="container"></div>
+                </div>
+                <div class="button-container">
+                    <button class="back-button" @click="move(-1)">Go back</button>
+                    <button  @click="move(0)">Try again</button>                
+                </div>
+            </div>
+       </div>
+    </div>
+</div>
+<script src="https://unpkg.com/vue@3"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js" integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+  Vue.createApp({
+    data() {
+      return {
+        message: 'Hello Vue!',
+        goal: 100000,
+        goal_reached: 0,
+        goal_months_count: 0,
+        projects: [
+            {
+                name: 'Vicewrld',
+                token: 'VICE',
+                network: 'BSC',
+                avatar: 'https://lithium-cms-backend.adoriasoft.link/uploads/logo_d5c79c1811.png',
+                private_price: 0.0055,
+                // private_price: 1,
+                ath: 0.088,
+                amount: 100,
+                growth_percentage: 5,
+                launch: new Date(2021, 09, 01),
+                launch_index: 0
+            },
+            {
+                name: 'Buffer Finance',
+                token: 'IBFR',
+                network: 'BSC',
+                avatar: 'https://lithium-cms-backend.adoriasoft.link/uploads/ibuffer_logo_507dd82956.png',
+                private_price: 0.047,
+                ath: 0.90,
+                amount: 100,
+                growth_percentage: 5,
+                launch: new Date(2021, 10, 01),
+                launch_index: 1
+            },
+            {
+                name: 'One Button',
+                token: 'OBT',
+                network: 'BSC',
+                avatar: 'https://lithium-cms-backend.adoriasoft.link/uploads/one_Button_logo_749ffc677f.png',
+                private_price: 0.1,
+                ath: 0.57,
+                amount: 100,
+                growth_percentage: 5,
+                launch: new Date(2021, 10, 01),
+                launch_index: 1
+            },
+            {
+                name: 'Bit Hotel',
+                token: 'BTH',
+                network: 'BSC',
+                avatar: 'https://lithium-cms-backend.adoriasoft.link/uploads/token_design_bithotel_e4c9863b77.png',
+                private_price: 0.012,
+                ath: 0.012,
+                amount: 100,
+                growth_percentage: 5,
+                launch: new Date(2021, 11, 01),
+                launch_index: 2
+            },
+            {
+                name: 'Solchicks',
+                token: 'SOLCHICKS',
+                network: 'SOLANA',
+                avatar: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAIAAAABc2X6AAAACXBIWXMAAAsTAAALEwEAmpwYAAAF1GlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNi4wLWMwMDMgNzkuMTY0NTI3LCAyMDIwLzEwLzE1LTE3OjQ4OjMyICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdEV2dD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlRXZlbnQjIiB4bWxuczpkYz0iaHR0cDovL3B1cmwub3JnL2RjL2VsZW1lbnRzLzEuMS8iIHhtbG5zOnBob3Rvc2hvcD0iaHR0cDovL25zLmFkb2JlLmNvbS9waG90b3Nob3AvMS4wLyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgMjIuMSAoTWFjaW50b3NoKSIgeG1wOkNyZWF0ZURhdGU9IjIwMjEtMTEtMjVUMTQ6NTU6NTZaIiB4bXA6TWV0YWRhdGFEYXRlPSIyMDIxLTExLTI1VDE0OjU1OjU2WiIgeG1wOk1vZGlmeURhdGU9IjIwMjEtMTEtMjVUMTQ6NTU6NTZaIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjBlMWZjZjUzLTc5MzgtNGEzOC1hODM4LTllYTVlMTEwZDBhYyIgeG1wTU06RG9jdW1lbnRJRD0iYWRvYmU6ZG9jaWQ6cGhvdG9zaG9wOmJmMjdhNzRkLTcwZDEtZjc0NS04NTk2LWY5MzFjMzM3Y2UyMyIg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',
+                private_price: 0.075,
+                ath: 0.52,
+                amount: 100,
+                growth_percentage: 5,
+                launch: new Date(2021, 11, 01),
+                launch_index: 2
+            },
+            {
+                name: 'Astraguild',
+                token: 'AGV',
+                network: 'ETHEREUM',
+                avatar: 'https://lithium-cms-backend.adoriasoft.link/uploads/AGV_Coin_f5d0c60463.png',
+                private_price: 0.2,
+                ath: 0.75,
+                amount: 100,
+                growth_percentage: 5,
+                launch: new Date(2021, 12, 01),
+                launch_index: 3
+            },
+            {
+                name: 'Paycer',
+                token: 'PCR',
+                network: '',
+                avatar: '',
+                private_price: 0.055,
+                ath: 0.12,
+                amount: 100,
+                growth_percentage: 5,
+                launch: new Date(2022, 01, 01),
+                launch_index: 4
+            },
+            {
+                name: 'Vault Hill',
+                token: 'VHC',
+                network: 'BSC',
+                avatar: 'https://lithium-cms-backend.adoriasoft.link/uploads/VH_token_icon_01_aa3f22ef69.png',
+                private_price: 0.05,
+                ath: 0.072,
+                amount: 100,
+                growth_percentage: 5,
+                launch: new Date(2022, 01, 01),
+                launch_index: 4
+            },
+            {
+                name: 'Teneo Finance',
+                token: 'TEN',
+                network: '',
+                avatar: '',
+                private_price: 0.095,
+                ath: 0,
+                amount: 100,
+                growth_percentage: 5,
+                launch: new Date(2022, 02, 01),
+                launch_index: 5
+            },
+            {
+                name: 'Defiyeld',
+                token: 'DEFI',
+                network: '',
+                avatar: '',
+                private_price: 0.24,
+                ath: 0,
+                amount: 100,
+                growth_percentage: 5,
+                launch: new Date(2022, 02, 01),
+                launch_index: 5
+            },
+            {
+                name: 'Legion Network',
+                token: 'LGX',
+                network: '',
+                avatar: 'https://lithium-cms-backend.adoriasoft.link/uploads/Legion_Token_200x200_d03e480859.png',
+                private_price: 0.075,
+                ath: 0,
+                amount: 100,
+                growth_percentage: 5,
+                launch: new Date(2022, 02, 01),
+                launch_index: 5
+            },
+            {
+                name: 'Mechachain',
+                token: 'MECHANIUM',
+                network: '',
+                avatar: 'https://lithium-cms-backend.adoriasoft.link/uploads/image_2_g68myw_bf28810790.png',
+                private_price: 0.07,
+                ath: 0,
+                amount: 100,
+                growth_percentage: 5,
+                launch: new Date(2022, 02, 01),
+                launch_index: 5
+            }
+        ],
+        tiers: [
+            {
+                name: 'Starter',
+                max: 200
+            },
+            {
+                name: 'Investor',
+                max: 500
+            },
+            {
+                name: 'Strategist',
+                max: 1000
+            },
+            {
+                name: 'Evangelist',
+                max: 2500
+            }
+        ],
+        setting: {
+            up: {
+                weight: 10,
+                projects: []
+            },
+            upper: {
+                weight: 15,
+                projects : [],
+            },
+            down: {
+                weight: -2,
+                projects : [],
+            },
+            downer: {
+                weight: -5,
+                projects : [],
+            }         
+        },
+        step: 0
+      }
+    },
+    methods: {
+        move(next) {
+            if (next == 0) {
+                this.step = 0
+            } else {
+                this.step += next
+            }
+        },
+
+        setAmount(amount) {
+            this.projects.map(project => {
+                project.amount = amount
+                return project
+            })
+            
+            this.move(1)
+        },
+
+        selectItem(list, project, project_index) {            
+            const index = this.setting[list]['projects'].indexOf(project)
+            const count = (list === 'up' || list === 'down') ? 3 : 1
+
+            if (index === -1) {
+                if (this.setting[list]['projects'].length < count) {
+                    this.setting[list]['projects'].push(project)
+                    this.projects[project_index].growth_percentage = this.setting[list].weight
+                }   
+            } else {
+                this.setting[list]['projects'].splice(index, 1)
+                this.projects[project_index].growth_percentage = 5
+            }
+
+            // console.log(this.setting[list]['projects'])
+        },
+        calculate() {
+            const self = this;
+            this.move(1)
+
+            let series = []
+
+            this.projects.forEach((project, i) => {
+                //                 
+                series.push({
+                    name: project.name,
+                    data: []
+                })
+            });
+
+            let is_calculating = true;
+            let index = 0
+            let categories = []
+            this.goal_months_count =  0
+            this.goal_reached =  0
+
+            while (this.goal_reached < this.goal) {
+                this.goal_reached = 0
+                this.projects.forEach((project, i) => {
+                    if (index >= project.launch_index) {
+                        const invesment = project.amount * project.private_price
+                        const percentage = (project.growth_percentage / 100)
+                        const amount = invesment * ((1 + percentage) ** index)
+                        series[i]['data'].push(amount)
+                        this.goal_reached += amount
+                    } else {
+                        series[i]['data'].push(0)
+                    }
+
+                });
+
+                categories.push('Month ' + (index+1))
+                console.log('Month ' + index, this.goal_reached)
+                index = index + 1
+            }
+
+            this.goal_months_count = categories.length
+
+            setTimeout(() => {
+                this.initChart(series, categories)
+            }, 600);
+            
+        },
+
+        initChart(series, categories) {
+            Highcharts.chart('container', {
+
+                title: {
+                    text: 'Estimated exponential monthly growth'
+                },
+
+                subtitle: {
+                    text: ''
+                },
+
+                yAxis: {
+                    title: {
+                        text: 'Amount invested'
+                    }
+                },
+
+                xAxis: {
+                    // categories,
+                    title: {
+                        text: 'Months since Lithium start '
+                    }
+                },
+
+                plotOptions: {
+                    series: {
+                        label: {
+                            connectorAllowed: false
+                        },
+                        pointStart: 1
+                    }
+                },
+
+                series,
+
+                responsive: {
+                    rules: [{
+                        condition: {
+                            maxWidth: 500
+                        },
+                        chartOptions: {
+                            legend: {
+                                layout: 'horizontal',
+                                align: 'center',
+                                verticalAlign: 'bottom'
+                            }
+                        }
+                    }]
+                }
+
+            });
+        }
+    }
+
+  }).mount('#app')
+</script>
+</body>
+</html>
