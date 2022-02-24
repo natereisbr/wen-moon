@@ -149,7 +149,7 @@
             <div class="page" v-if="step == 1">
                 <h2>How big is your moon?</h2>
                 <p>Some guys wanna lambos, other want an island... But now, let's talk about $$$$! How much dolars do you want to your investments achieve?</p>
-                <input type="text" v-model="goal">
+                <input inputmode="numeric" type="text" v-model="goal">
                 <div class="button-container">
                     <button @click="move(1)" v-if="goal && goal > 0">Continue</button>
                 </div>
@@ -169,7 +169,7 @@
                 <p>As an investor you can put as much money as your tier allows you. Tell us about your bags!</p>
                 <div v-for="(project, index) in projects" :key="project.name" class="item-card shadow">
                     <span>{{project.name}}</span>
-                    <input type="text" v-model="project.amount">
+                    <input inputmode="numeric" type="text" v-model="project.amount">
                 </div>
                 <div class="button-container">
                     <button class="back-button" @click="move(-1)">Go back</button>
@@ -240,7 +240,7 @@
                 <p>Check this monthly growth! Do you believe this project can grow (or decrease) this percentage every month?</p>
                 <div v-for="(project, index) in projects" :key="project.name" class="item-card shadow">
                     <span>{{project.name}}</span>
-                    <input type="text" v-model="project.growth_percentage">
+                    <input inputmode="numeric" type="text" v-model="project.growth_percentage">
                 </div>
                 <div class="button-container">
                     <button class="back-button" @click="move(-1)">Go back</button>
